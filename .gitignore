@@ -182,6 +182,9 @@ symengine/symengine_config_cling.h
 # Jupyter artefacts
 .ipynb_checkpoints/
 
+# Pixi
+.pixi/
+
 # IDE related
 /.idea
 .*cache/
