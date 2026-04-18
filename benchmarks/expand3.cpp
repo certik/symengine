@@ -31,11 +31,15 @@ int main(int argc, char *argv[])
     RCP<const Basic> y = symbol("y");
     RCP<const Basic> z = symbol("z");
     RCP<const Basic> w = symbol("w");
-    RCP<const Basic> i100 = integer(100);
+    RCP<const Basic> i1 = integer(1);
+    RCP<const Basic> i2 = integer(2);
+    RCP<const Basic> i3 = integer(3);
+    RCP<const Basic> i4 = integer(4);
+    RCP<const Basic> i100 = integer(38);
 
     RCP<const Basic> e, r;
 
-    e = pow(add(add(pow(x, y), pow(y, x)), pow(z, x)), i100);
+    e = pow(add(add(add(pow(x, i2), add(i1, x)), pow(x, i3)), pow(x, i4)), i100);
 
     std::cout << "Expanding: " << *e << std::endl;
 
