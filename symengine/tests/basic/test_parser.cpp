@@ -189,11 +189,12 @@ TEST_CASE("Parsing: integers, basic operations", "[parser]")
     REQUIRE(eq(*res, *parse("(2^(2*n))*y")));
     REQUIRE(eq(*res, *parse(res->__str__())));
 
+#if SYMENGINE_INTEGER_CLASS != SYMENGINE_INT64
     s = "10000000000000000000000000";
     res = parse(s);
     REQUIRE(eq(*res, *pow(integer(10), integer(25))));
     REQUIRE(eq(*res, *parse(res->__str__())));
-
+#endif
     // Make sure that parsing and printing works correctly
     s = "0.123123123e-10";
     res = parse(s);

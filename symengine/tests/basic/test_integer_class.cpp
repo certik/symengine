@@ -810,6 +810,7 @@ TEST_CASE("misc: integer_class", "[integer_class]")
     REQUIRE(mp_sign(integer_class(0)) == 0);
 
     // mp_get_ui
+#if SYMENGINE_INTEGER_CLASS != SYMENGINE_INT64
     if (sizeof(long) == 8) {
         REQUIRE(mp_get_ui(integer_class("-18446744073709551616")) == 0u);
         REQUIRE(mp_get_ui(integer_class("-18446744073709551615"))
@@ -824,12 +825,14 @@ TEST_CASE("misc: integer_class", "[integer_class]")
         REQUIRE(mp_get_ui(integer_class("-2147483649")) == 2147483649u);
         REQUIRE(mp_get_ui(integer_class("-2147483648")) == 2147483648u);
     }
+#endif
 
     REQUIRE(mp_get_ui(integer_class("-2")) == 2u);
     REQUIRE(mp_get_ui(integer_class("-1")) == 1u);
     REQUIRE(mp_get_ui(integer_class("0")) == 0u);
     REQUIRE(mp_get_ui(integer_class("1")) == 1u);
     REQUIRE(mp_get_ui(integer_class("2")) == 2u);
+#if SYMENGINE_INTEGER_CLASS != SYMENGINE_INT64
     if (sizeof(long) == 8) {
         REQUIRE(mp_get_ui(integer_class("9223372036854775807"))
                 == 9223372036854775807u);
@@ -847,6 +850,7 @@ TEST_CASE("misc: integer_class", "[integer_class]")
         REQUIRE(mp_get_ui(integer_class("-4294967295")) == 4294967295u);
         REQUIRE(mp_get_ui(integer_class("4294967296")) == 0u);
     }
+#endif
 
     // mp_scan1
     if (sizeof(long) == 8) {
@@ -878,13 +882,21 @@ TEST_CASE("misc: integer_class", "[integer_class]")
 
     // fits
     integer_class long_max(LONG_MAX);
+#if SYMENGINE_INTEGER_CLASS != SYMENGINE_INT64
     integer_class past_long_max(long_max + 1);
+#endif
     integer_class ulong_max(ULONG_MAX);
+#if SYMENGINE_INTEGER_CLASS != SYMENGINE_INT64
     integer_class past_ulong_max(ulong_max + 1);
+#endif
     REQUIRE(mp_fits_slong_p(long_max));
+#if SYMENGINE_INTEGER_CLASS != SYMENGINE_INT64
     REQUIRE(!mp_fits_slong_p(past_long_max));
+#endif
     REQUIRE(mp_fits_ulong_p(long_max));
+#if SYMENGINE_INTEGER_CLASS != SYMENGINE_INT64
     REQUIRE(!mp_fits_ulong_p(past_ulong_max));
+#endif
 
     // mp_fac_ui
     mp_fac_ui(res, 5);

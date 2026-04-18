@@ -177,11 +177,12 @@ TEST_CASE("Parsing: integers, basic operations", "[sbml_parser]")
     REQUIRE(eq(*res, *div(one, integer(4))));
     REQUIRE(eq(*res, *parse_sbml(sbml(*res))));
 
+#if SYMENGINE_INTEGER_CLASS != SYMENGINE_INT64
     s = "10000000000000000000000000";
     res = parse_sbml(s);
     REQUIRE(eq(*res, *pow(integer(10), integer(25))));
     REQUIRE(eq(*res, *parse_sbml(sbml(*res))));
-
+#endif
     s = "0.123123123e-10";
     res = parse_sbml(s);
     REQUIRE(eq(*res, *parse_sbml(sbml(*res))));

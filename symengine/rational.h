@@ -200,7 +200,8 @@ public:
             throw SymEngineException("powrat: 'exp' does not fit ulong.");
         unsigned long exp = mp_get_ui(exp_);
 
-#if SYMENGINE_INTEGER_CLASS == SYMENGINE_BOOSTMP
+#if SYMENGINE_INTEGER_CLASS == SYMENGINE_BOOSTMP                               \
+        || SYMENGINE_INTEGER_CLASS == SYMENGINE_INT64
         // boost::multiprecision::cpp_rational doesn't provide
         // non-const references to num and den
         integer_class num;

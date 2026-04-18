@@ -19,11 +19,11 @@
 #include <arb.h>
 #include <bernoulli.h>
 #endif // HAVE_SYMENGINE_ARB
-#ifndef HAVE_SYMENGINE_GMP
+#if !defined(HAVE_SYMENGINE_GMP) && SYMENGINE_INTEGER_CLASS != SYMENGINE_INT64
 #include <boost/random/uniform_int.hpp>
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/random.hpp>
-#endif // !HAVE_SYMENGINE_GMP
+#endif
 
 namespace SymEngine
 {
@@ -532,7 +532,8 @@ RCP<const Number> harmonic(unsigned long n, long m)
         for (unsigned i = 1; i <= n; ++i) {
             if (m > 0) {
                 rational_class t(1u, i);
-#if SYMENGINE_INTEGER_CLASS != SYMENGINE_BOOSTMP
+#if SYMENGINE_INTEGER_CLASS != SYMENGINE_BOOSTMP                               \
+    && SYMENGINE_INTEGER_CLASS != SYMENGINE_INT64
                 mp_pow_ui(get_den(t), get_den(t), m);
 #else
                 mp_pow_ui(t, t, m);

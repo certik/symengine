@@ -147,7 +147,8 @@ using SymEngine::vec_basic;
 using SymEngine::zero;
 using SymEngine::zeta;
 using SymEngine::Zeta;
-#if SYMENGINE_INTEGER_CLASS != SYMENGINE_BOOSTMP
+#if SYMENGINE_INTEGER_CLASS != SYMENGINE_BOOSTMP                               \
+    && SYMENGINE_INTEGER_CLASS != SYMENGINE_INT64
 using SymEngine::get_mpz_t;
 #endif
 using SymEngine::ceiling;

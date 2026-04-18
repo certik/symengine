@@ -424,7 +424,8 @@ bool trig_simplify(const RCP<const Basic> &arg, unsigned period, bool odd,
             SYMENGINE_ASSERT(is_a<Rational>(*n));
             m = down_cast<const Rational &>(*n).as_rational_class() / period;
             integer_class t;
-#if SYMENGINE_INTEGER_CLASS != SYMENGINE_BOOSTMP
+#if SYMENGINE_INTEGER_CLASS != SYMENGINE_BOOSTMP                               \
+    && SYMENGINE_INTEGER_CLASS != SYMENGINE_INT64
             mp_fdiv_r(t, get_num(m), get_den(m));
             get_num(m) = t;
 #else

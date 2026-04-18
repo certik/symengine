@@ -4,7 +4,8 @@
 #include <symengine/symengine_config.h>
 #include <symengine/symengine_casts.h>
 #include <cstring>
-#if SYMENGINE_INTEGER_CLASS != SYMENGINE_BOOSTMP
+#if SYMENGINE_INTEGER_CLASS != SYMENGINE_BOOSTMP                               \
+    && SYMENGINE_INTEGER_CLASS != SYMENGINE_INT64
 #include <symengine/mp_wrapper.h>
 #endif
 
@@ -20,6 +21,8 @@
 #elif SYMENGINE_INTEGER_CLASS == SYMENGINE_GMPXX
 #define __GMPXX_USE_CXX11 1
 #include <gmpxx.h>
+#elif SYMENGINE_INTEGER_CLASS == SYMENGINE_INT64
+#include <symengine/mp_int64.h>
 #endif
 
 namespace SymEngine
@@ -67,6 +70,9 @@ typedef mpq_wrapper rational_class;
 #elif SYMENGINE_INTEGER_CLASS == SYMENGINE_GMPXX
 typedef mpz_class integer_class;
 typedef mpq_class rational_class;
+#elif SYMENGINE_INTEGER_CLASS == SYMENGINE_INT64
+typedef int64_wrapper integer_class;
+typedef rational_int64 rational_class;
 #endif
 
 // needs to be in a separate namespace to import the literals.
@@ -1071,7 +1077,322 @@ private:
     boost::random::mt19937 _twister;
 };
 
-#endif // SYMENGINE_INTEGER_CLASS == SYMENGINE_BOOSTMP
+#elif SYMENGINE_INTEGER_CLASS == SYMENGINE_INT64
+
+inline integer_class mp_abs(const integer_class &i)
+{
+    return integer_class(i.get() < 0 ? -i.get() : i.get());
+}
+
+inline int mp_cmpabs(const integer_class &a, const integer_class &b)
+{
+    int64_t aa = a.get() < 0 ? -a.get() : a.get();
+    int64_t bb = b.get() < 0 ? -b.get() : b.get();
+    return (aa > bb) - (aa < bb);
+}
+
+inline int mp_sign(const integer_class &i)
+{
+    return i.sign();
+}
+
+inline double mp_get_d(const integer_class &i)
+{
+    return i.get_d();
+}
+
+inline void mp_set_d(integer_class &i, double a)
+{
+    i = integer_class(a);
+}
+
+inline void mp_set_str(integer_class &i, const std::string &a)
+{
+    i = integer_class(a);
+}
+
+inline std::string mp_get_hex_str(const integer_class &i)
+{
+    std::ostringstream oss;
+    int64_t val = i.get();
+    if (val < 0) {
+        oss << "-";
+        val = -val;
+    }
+    oss << std::hex << val;
+    return oss.str();
+}
+
+integer_class mp_sqrt(const integer_class &i);
+
+inline unsigned long mp_get_ui(const integer_class &i)
+{
+    return i.get_ui();
+}
+
+inline long mp_get_si(const integer_class &i)
+{
+    return i.get_si();
+}
+
+inline bool mp_fits_ulong_p(const integer_class &i)
+{
+    return i.fits_ulong_p();
+}
+
+inline bool mp_fits_slong_p(const integer_class &i)
+{
+    return i.fits_slong_p();
+}
+
+inline void mp_and(integer_class &res, const integer_class &a,
+                   const integer_class &b)
+{
+    res = a & b;
+}
+
+inline void mp_pow_ui(integer_class &res, const integer_class &i,
+                      unsigned long n)
+{
+    int64_t base = i.get();
+    int64_t result = 1;
+    while (n > 0) {
+        if (n & 1) {
+            __int128 tmp = (__int128)result * base;
+            if (tmp > INT64_MAX || tmp < INT64_MIN) {
+                // Overflow: saturate to INT64_MAX to signal "too big"
+                res = (result > 0) == (base > 0) ? INT64_MAX : INT64_MIN;
+                return;
+            }
+            result = static_cast<int64_t>(tmp);
+        }
+        __int128 tmp = (__int128)base * base;
+        if (n > 1 && (tmp > INT64_MAX || tmp < INT64_MIN)) {
+            res = INT64_MAX;
+            return;
+        }
+        base = static_cast<int64_t>(tmp);
+        n >>= 1;
+    }
+    res = result;
+}
+
+inline void mp_gcd(integer_class &res, const integer_class &a,
+                   const integer_class &b)
+{
+    int64_t x = a.get() < 0 ? -a.get() : a.get();
+    int64_t y = b.get() < 0 ? -b.get() : b.get();
+    while (y) {
+        int64_t t = y;
+        y = x % y;
+        x = t;
+    }
+    res = x;
+}
+
+void mp_fdiv_qr(integer_class &q, integer_class &r, const integer_class &a,
+                const integer_class &b);
+
+void mp_cdiv_qr(integer_class &q, integer_class &r, const integer_class &a,
+                const integer_class &b);
+
+inline void mp_fdiv_r(integer_class &res, const integer_class &a,
+                      const integer_class &b)
+{
+    integer_class quo;
+    mp_fdiv_qr(quo, res, a, b);
+}
+
+inline void mp_fdiv_q(integer_class &res, const integer_class &a,
+                      const integer_class &b)
+{
+    integer_class rem;
+    mp_fdiv_qr(res, rem, a, b);
+}
+
+inline void mp_cdiv_q(integer_class &res, const integer_class &a,
+                      const integer_class &b)
+{
+    integer_class rem;
+    mp_cdiv_qr(res, rem, a, b);
+}
+
+inline void mp_tdiv_qr(integer_class &q, integer_class &r,
+                       const integer_class &a, const integer_class &b)
+{
+    q = a.get() / b.get();
+    r = a.get() % b.get();
+}
+
+inline void mp_tdiv_q(integer_class &res, const integer_class &a,
+                      const integer_class &b)
+{
+    res = a.get() / b.get();
+}
+
+inline void mp_divexact(integer_class &q, const integer_class &a,
+                        const integer_class &b)
+{
+    q = a.get() / b.get();
+}
+
+inline void mp_lcm(integer_class &q, const integer_class &a,
+                   const integer_class &b)
+{
+    integer_class g;
+    mp_gcd(g, a, b);
+    if (g.get() == 0) {
+        q = 0;
+    } else {
+        q = (a.get() / g.get()) * b.get();
+        if (q.get() < 0)
+            q = -q;
+    }
+}
+
+inline void mp_addmul(integer_class &r, const integer_class &a,
+                      const integer_class &b)
+{
+    r = r.get() + a.get() * b.get();
+}
+
+inline void mp_demote(integer_class &) {}
+
+inline bool mp_divisible_p(const integer_class &a, const integer_class &b)
+{
+    if (b.get() == 0)
+        return (a.get() == 0);
+    return a.get() % b.get() == 0;
+}
+
+void mp_powm(integer_class &res, const integer_class &a, const integer_class &b,
+             const integer_class &m);
+
+bool mp_invert(integer_class &res, const integer_class &a,
+               const integer_class &m);
+
+void mp_gcdext(integer_class &gcd, integer_class &s, integer_class &t,
+               const integer_class &a, const integer_class &b);
+
+void mp_pow_ui(rational_class &res, const rational_class &i, unsigned long n);
+
+bool mp_root(integer_class &res, const integer_class &i, unsigned long n);
+
+void mp_rootrem(integer_class &a, integer_class &b, const integer_class &i,
+                unsigned long n);
+
+void mp_sqrtrem(integer_class &a, integer_class &b, const integer_class &i);
+
+int mp_probab_prime_p(const integer_class &i, unsigned retries);
+
+void mp_nextprime(integer_class &res, const integer_class &i);
+
+unsigned long mp_scan1(const integer_class &i);
+
+void mp_fib_ui(integer_class &res, unsigned long n);
+
+void mp_fib2_ui(integer_class &a, integer_class &b, unsigned long n);
+
+void mp_lucnum_ui(integer_class &res, unsigned long n);
+
+void mp_lucnum2_ui(integer_class &a, integer_class &b, unsigned long n);
+
+void mp_fac_ui(integer_class &res, unsigned long n);
+
+void mp_bin_ui(integer_class &res, const integer_class &n, unsigned long r);
+
+bool mp_perfect_power_p(const integer_class &i);
+
+bool mp_perfect_square_p(const integer_class &i);
+
+int mp_legendre(const integer_class &a, const integer_class &n);
+
+int mp_jacobi(const integer_class &a, const integer_class &n);
+
+int mp_kronecker(const integer_class &a, const integer_class &n);
+
+integer_class mp_primorial(unsigned long n);
+
+// Helper functions for rational_int64
+inline const integer_class &get_den(const rational_class &i)
+{
+    return i.den_;
+}
+
+inline const integer_class &get_num(const rational_class &i)
+{
+    return i.num_;
+}
+
+inline integer_class &get_den(rational_class &i)
+{
+    return i.den_;
+}
+
+inline integer_class &get_num(rational_class &i)
+{
+    return i.num_;
+}
+
+inline void canonicalize(rational_class &i)
+{
+    if (i.den_.get() == 0)
+        return;
+    int64_t g = i.num_.get();
+    int64_t d = i.den_.get();
+    // GCD
+    int64_t a = g < 0 ? -g : g;
+    int64_t b = d < 0 ? -d : d;
+    while (b) {
+        int64_t t = b;
+        b = a % b;
+        a = t;
+    }
+    if (a > 1) {
+        i.num_ = g / a;
+        i.den_ = d / a;
+    }
+    // Ensure positive denominator
+    if (i.den_.get() < 0) {
+        i.num_ = -i.num_;
+        i.den_ = -i.den_;
+    }
+}
+
+inline double mp_get_d(const rational_class &i)
+{
+    return i.get_d();
+}
+
+inline int mp_sign(const rational_class &i)
+{
+    return i.sign();
+}
+
+inline rational_class mp_abs(const rational_class &i)
+{
+    return rational_class(mp_abs(i.num_), i.den_);
+}
+
+class mp_randstate
+{
+public:
+    void urandomint(integer_class &res, const integer_class &a)
+    {
+        std::uniform_int_distribution<int64_t> dist(0, a.get() - 1);
+        res = dist(_engine);
+    }
+
+    void seed(const uint32_t &i)
+    {
+        _engine.seed(i);
+    }
+
+private:
+    std::mt19937_64 _engine{std::random_device{}()};
+};
+
+#endif // SYMENGINE_INTEGER_CLASS == GMPXX/GMP/PIRANHA/FLINT/BOOSTMP/INT64
 
 // The implementation of each of the following
 // requires only get_mpz_t(integer_class), mp_demote

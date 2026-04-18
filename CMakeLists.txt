@@ -102,7 +102,7 @@ try_compile(HAVE_SYMENGINE_STD_TO_STRING "${CMAKE_CURRENT_BINARY_DIR}/cxx" "${CM
 	CMAKE_FLAGS "-DCOMPILE_DEFINITIONS=${CMAKE_CXX_FLAGS}")
 
 set(INTEGER_CLASS "gmp"
-    CACHE STRING "Integer class for symengine. Either gmp, gmpxx, flint or piranha")
+    CACHE STRING "Integer class for symengine. Either gmp, gmpxx, flint, piranha, boostmp or int64")
 
 # Virtual TypeID
 set(WITH_VIRTUAL_TYPEID no CACHE BOOL "Use virtual TypeID getter")
@@ -122,6 +122,9 @@ set(HAVE_SYMENGINE_GMP yes)
 if ("${INTEGER_CLASS}" MATCHES "boostmp")
     set(SYMENGINE_INTEGER_CLASS "BOOSTMP")
     set(WITH_BOOST yes)
+    set(HAVE_SYMENGINE_GMP no)
+elseif ("${INTEGER_CLASS}" MATCHES "int64")
+    set(SYMENGINE_INTEGER_CLASS "INT64")
     set(HAVE_SYMENGINE_GMP no)
 elseif ("${INTEGER_CLASS}" MATCHES "piranha")
     set(SYMENGINE_INTEGER_CLASS "PIRANHA")
@@ -210,9 +213,9 @@ if (WITH_VIRTUAL_TYPEID)
     set(WITH_SYMENGINE_VIRTUAL_TYPEID True)
 endif()
 
-if (SYMENGINE_INTEGER_CLASS STREQUAL "BOOSTMP")
+if (SYMENGINE_INTEGER_CLASS STREQUAL "BOOSTMP" OR SYMENGINE_INTEGER_CLASS STREQUAL "INT64")
     if (WITH_FLINT OR WITH_ARB OR WITH_MPFR)
-        message(FATAL_ERROR "INTEGER_CLASS=boostmp cannot be used with FLINT, ARB or MPFR")
+        message(FATAL_ERROR "INTEGER_CLASS=${INTEGER_CLASS} cannot be used with FLINT, ARB or MPFR")
     endif()
 endif()
 

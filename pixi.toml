@@ -6,10 +6,10 @@ platforms = ["osx-arm64", "osx-64"]
 
 [dependencies]
 cmake = ">=3.18"
-gmp = "*"
 ninja = "*"
 
 [tasks]
-configure = "cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=$CONDA_PREFIX"
+configure = "cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DINTEGER_CLASS=int64"
 build = { cmd = "cmake --build build", depends-on = ["configure"] }
 test = { cmd = "ctest --test-dir build --output-on-failure", depends-on = ["build"] }
+benchmark = { cmd = "build/benchmarks/symbench", depends-on = ["build"] }

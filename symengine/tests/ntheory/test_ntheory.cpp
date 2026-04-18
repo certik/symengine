@@ -298,7 +298,8 @@ TEST_CASE("test_factor_pollard_pm1_method(): ntheory", "[ntheory]")
     REQUIRE((factor_pollard_pm1_method(outArg(f), *i1850) == 0
              or divides(*i1850, *f)));
 
-#if SYMENGINE_INTEGER_CLASS != SYMENGINE_BOOSTMP
+#if SYMENGINE_INTEGER_CLASS != SYMENGINE_BOOSTMP                               \
+    && SYMENGINE_INTEGER_CLASS != SYMENGINE_INT64
     CHECK_THROWS_AS(factor_pollard_pm1_method(outArg(f), *i2),
                     SymEngineException);
 #endif
@@ -332,7 +333,8 @@ TEST_CASE("test_factor_pollard_rho_method(): ntheory", "[ntheory]")
     REQUIRE((factor_pollard_rho_method(outArg(f), *i1850) == 0
              or divides(*i1850, *f)));
 
-#if SYMENGINE_INTEGER_CLASS != SYMENGINE_BOOSTMP
+#if SYMENGINE_INTEGER_CLASS != SYMENGINE_BOOSTMP                               \
+    && SYMENGINE_INTEGER_CLASS != SYMENGINE_INT64
     CHECK_THROWS_AS(factor_pollard_rho_method(outArg(f), *i2),
                     SymEngineException);
 #endif

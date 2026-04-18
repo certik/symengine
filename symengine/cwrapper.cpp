@@ -60,7 +60,8 @@ using SymEngine::set_basic;
 using SymEngine::vec_basic;
 using SymEngine::vec_pair;
 using SymEngine::vec_sym;
-#if SYMENGINE_INTEGER_CLASS != SYMENGINE_BOOSTMP
+#if SYMENGINE_INTEGER_CLASS != SYMENGINE_BOOSTMP                               \
+    && SYMENGINE_INTEGER_CLASS != SYMENGINE_INT64
 using SymEngine::get_mpq_t;
 using SymEngine::get_mpz_t;
 #endif
@@ -325,7 +326,8 @@ CWRAPPER_OUTPUT_TYPE integer_set_ui(basic s, unsigned long i)
     CWRAPPER_END
 }
 
-#if SYMENGINE_INTEGER_CLASS != SYMENGINE_BOOSTMP
+#if SYMENGINE_INTEGER_CLASS != SYMENGINE_BOOSTMP                               \
+    && SYMENGINE_INTEGER_CLASS != SYMENGINE_INT64
 CWRAPPER_OUTPUT_TYPE integer_set_mpz(basic s, const mpz_t i)
 {
     CWRAPPER_BEGIN
@@ -432,7 +434,8 @@ unsigned long integer_get_ui(const basic s)
     return mp_get_ui((down_cast<const Integer &>(*(s->m))).as_integer_class());
 }
 
-#if SYMENGINE_INTEGER_CLASS != SYMENGINE_BOOSTMP
+#if SYMENGINE_INTEGER_CLASS != SYMENGINE_BOOSTMP                               \
+    && SYMENGINE_INTEGER_CLASS != SYMENGINE_INT64
 CWRAPPER_OUTPUT_TYPE integer_get_mpz(mpz_t a, const basic s)
 {
     CWRAPPER_BEGIN
@@ -468,7 +471,8 @@ CWRAPPER_OUTPUT_TYPE rational_set(basic s, const basic a, const basic b)
     return SYMENGINE_NO_EXCEPTION;
 }
 
-#if SYMENGINE_INTEGER_CLASS != SYMENGINE_BOOSTMP
+#if SYMENGINE_INTEGER_CLASS != SYMENGINE_BOOSTMP                               \
+    && SYMENGINE_INTEGER_CLASS != SYMENGINE_INT64
 CWRAPPER_OUTPUT_TYPE rational_get_mpq(mpq_t a, const basic s)
 {
     CWRAPPER_BEGIN
@@ -504,7 +508,8 @@ CWRAPPER_OUTPUT_TYPE complex_set_rat(basic s, const basic re, const basic im)
     CWRAPPER_END
 }
 
-#if SYMENGINE_INTEGER_CLASS != SYMENGINE_BOOSTMP
+#if SYMENGINE_INTEGER_CLASS != SYMENGINE_BOOSTMP                               \
+    && SYMENGINE_INTEGER_CLASS != SYMENGINE_INT64
 CWRAPPER_OUTPUT_TYPE complex_set_mpq(basic s, const mpq_t re, const mpq_t im)
 {
     CWRAPPER_BEGIN

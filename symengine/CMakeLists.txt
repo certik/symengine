@@ -127,6 +127,8 @@ set(SRC
 
 if ("${SYMENGINE_INTEGER_CLASS}" STREQUAL "BOOSTMP")
     set(SRC ${SRC} mp_boost.cpp)
+elseif ("${SYMENGINE_INTEGER_CLASS}" STREQUAL "INT64")
+    set(SRC ${SRC} mp_int64.cpp)
 elseif ("${SYMENGINE_INTEGER_CLASS}" STREQUAL "FLINT")
     set(SRC ${SRC} mp_wrapper.cpp)
 elseif ("${SYMENGINE_INTEGER_CLASS}" STREQUAL "GMP")

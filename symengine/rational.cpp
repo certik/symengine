@@ -50,7 +50,8 @@ RCP<const Number> Rational::from_two_ints(const Integer &n, const Integer &d)
             return ComplexInf;
         }
     }
-#if SYMENGINE_INTEGER_CLASS == SYMENGINE_BOOSTMP
+#if SYMENGINE_INTEGER_CLASS == SYMENGINE_BOOSTMP                               \
+    || SYMENGINE_INTEGER_CLASS == SYMENGINE_INT64
     // workaround https://github.com/boostorg/rational/issues/27
     rational_class q;
     if (d.as_integer_class() < 0) {
@@ -77,7 +78,8 @@ RCP<const Number> Rational::from_two_ints(long n, long d)
             return ComplexInf;
         }
     }
-#if SYMENGINE_INTEGER_CLASS == SYMENGINE_BOOSTMP
+#if SYMENGINE_INTEGER_CLASS == SYMENGINE_BOOSTMP                               \
+    || SYMENGINE_INTEGER_CLASS == SYMENGINE_INT64
     // workaround https://github.com/boostorg/rational/issues/27
     if (d < 0) {
         d *= -1;
@@ -161,7 +163,8 @@ bool Rational::nth_root(const Ptr<RCP<const Number>> &the_rat,
     if (n == 0)
         throw SymEngineException("i_nth_root: Can not find Zeroth root");
 
-#if SYMENGINE_INTEGER_CLASS != SYMENGINE_BOOSTMP
+#if SYMENGINE_INTEGER_CLASS != SYMENGINE_BOOSTMP                               \
+    && SYMENGINE_INTEGER_CLASS != SYMENGINE_INT64
     rational_class r;
     int ret = mp_root(SymEngine::get_num(r), SymEngine::get_num(i), n);
     if (ret == 0)

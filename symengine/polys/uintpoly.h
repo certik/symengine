@@ -56,6 +56,23 @@ public:
 
     static UIntDict mul(const UIntDict &a, const UIntDict &b)
     {
+#if SYMENGINE_INTEGER_CLASS == SYMENGINE_INT64
+        // Naive O(n*m) multiplication — Kronecker substitution overflows
+        // with 64-bit integers for non-trivial polynomials.
+        UIntDict p;
+        for (const auto &i1 : a.dict_)
+            for (const auto &i2 : b.dict_)
+                p.dict_[i1.first + i2.first] += i1.second * i2.second;
+
+        for (auto it = p.dict_.cbegin(); it != p.dict_.cend();) {
+            if (it->second == 0) {
+                p.dict_.erase(it++);
+            } else {
+                ++it;
+            }
+        }
+        return p;
+#else
         int mul = 1;
 
         unsigned int N = bit_length(std::min(a.degree() + 1, b.degree() + 1))
@@ -91,6 +108,7 @@ public:
             deg++;
         }
         return r;
+#endif
     }
 
     int compare(const UIntDict &other) const

@@ -157,7 +157,8 @@ void test_cwrapper()
     SYMENGINE_C_ASSERT(is_a_Rational(e));
     SYMENGINE_C_ASSERT(!is_a_Integer(e));
 
-#if SYMENGINE_INTEGER_CLASS != SYMENGINE_BOOSTMP
+#if SYMENGINE_INTEGER_CLASS != SYMENGINE_BOOSTMP                               \
+    && SYMENGINE_INTEGER_CLASS != SYMENGINE_INT64
     mpq_t testr;
     mpq_init(testr);
 #endif
@@ -168,7 +169,8 @@ void test_cwrapper()
     integer_set_ui(a, 2);
     integer_set_ui(b, 4);
     rational_set(e, a, b);
-#if SYMENGINE_INTEGER_CLASS != SYMENGINE_BOOSTMP
+#if SYMENGINE_INTEGER_CLASS != SYMENGINE_BOOSTMP                               \
+    && SYMENGINE_INTEGER_CLASS != SYMENGINE_INT64
     rational_get_mpq(testr, e);
     SYMENGINE_C_ASSERT(mpq_cmp_ui(testr, 1, 2) == 0);
 #endif
@@ -195,7 +197,8 @@ void test_cwrapper()
     SYMENGINE_C_ASSERT(number_is_positive(e) == 0);
     SYMENGINE_C_ASSERT(number_is_complex(e) == 0);
 
-#if SYMENGINE_INTEGER_CLASS != SYMENGINE_BOOSTMP
+#if SYMENGINE_INTEGER_CLASS != SYMENGINE_BOOSTMP                               \
+    && SYMENGINE_INTEGER_CLASS != SYMENGINE_INT64
     mpz_t test;
     mpz_init(test);
 
@@ -214,7 +217,8 @@ void test_cwrapper()
     SYMENGINE_C_ASSERT(is_a_Integer(p));
     SYMENGINE_C_ASSERT(integer_get_si(p) == 444);
 
-#if SYMENGINE_INTEGER_CLASS != SYMENGINE_BOOSTMP
+#if SYMENGINE_INTEGER_CLASS != SYMENGINE_BOOSTMP                               \
+    && SYMENGINE_INTEGER_CLASS != SYMENGINE_INT64
     mpq_clear(testr);
     mpz_clear(test);
 #endif
